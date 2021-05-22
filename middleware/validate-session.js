@@ -1,36 +1,36 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user')(require('../db'), require('sequelize').DataTypes);;
+const User = require('../models/user')(require('../db'), require('sequelize').DataTypes);
 
 module.exports = function (req, res, next) {
-    if (req.method == 'OPTIONS') {
-        next();   // allowing options as a method for request
+    if (req.method === 'OPTIONS') {
+        next(); // allowing options as a method for request
     } else {
         const sessionToken = req.headers.authorization;
         console.log(sessionToken);
-        if (!sessionToken) return res.status(403).json({
+        if (!sessionToken) {
+            return res.status(403).json({
             auth: false,
-            message: "No token provided."
+            message: 'No token provided.',
         });
-        else {
+        } else {
             jwt.verify(sessionToken, 'lets_play_sum_games_man', (err, decoded) => {
                 if (decoded) {
                     User.findOne({ where: { id: decoded.id } }).then(user => {
                         req.user = user;
-                        console.log(`user: ${user}`)
-                        next()
+                        console.log(`user: ${user}`);
+                        next();
                     },
                         function () {
                             res.status(401).json({
-                                message: "Not authorized"
+                                message: 'Not authorized',
                             });
-                        })
-
+                        });
                 } else {
                     res.status(400).json({
-                        message: "Not authorized"
-                    })
+                        message: 'Not authorized',
+                    });
                 }
             });
         }
     }
-}
+};
