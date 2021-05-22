@@ -14,12 +14,6 @@ export const sequelize = new Sequelize(
   },
 );
 
-sequelize.authenticate().then(
-  function success() {
-    console.log('Connected to DB');
-  },
-
-  function fail(err) {
-    console.log(`Error: ${err}`);
-  },
-);
+sequelize.authenticate()
+  .then(() => console.log('Connected to DB'))
+  .catch((error) => console.log(`Error: ${error}`));
