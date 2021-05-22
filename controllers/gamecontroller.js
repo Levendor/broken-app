@@ -4,7 +4,7 @@ var Game = require('../models/game')(require('../db'), require('sequelize').Data
 router.get('/all', (req, res) => {
     Game.findAll({ where: { owner_id: req.user.id } })
         .then(
-            function findSuccess(data) {
+            function findSuccess(games) {
                 res.status(200).json({
                     games: games,
                     message: "Data fetched."
@@ -39,7 +39,7 @@ router.get('/:id', (req, res) => {
 router.post('/create', (req, res) => {
     Game.create({
         title: req.body.game.title,
-        owner_id: req.body.user.id,
+        owner_id: req.user.id,
         studio: req.body.game.studio,
         esrb_rating: req.body.game.esrb_rating,
         user_rating: req.body.game.user_rating,
@@ -70,7 +70,7 @@ router.put('/update/:id', (req, res) => {
         {
             where: {
                 id: req.params.id,
-                owner_id: req.user
+                owner_id: req.user.id
             }
         })
         .then(
@@ -100,7 +100,7 @@ router.delete('/remove/:id', (req, res) => {
     .then(
         function deleteSuccess(game) {
             res.status(200).json({
-                game: game,
+                gameId: req.params.id,
                 message: "Successfully deleted"
             })
         },
