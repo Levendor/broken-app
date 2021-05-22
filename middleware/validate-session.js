@@ -1,7 +1,11 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/user')(require('../db'), require('sequelize').DataTypes);
+import jwt from 'jsonwebtoken';
+import Sequelize from 'sequelize';
+import { sequelize } from '../db.js';
+import { UserModel } from '../models/user.js';
 
-module.exports = function (req, res, next) {
+const User = UserModel(sequelize, Sequelize.DataTypes);
+
+export function authenticate(req, res, next) {
   if (req.method === 'OPTIONS') {
     next(); // allowing options as a method for request
   } else {
@@ -33,4 +37,4 @@ module.exports = function (req, res, next) {
       });
     }
   }
-};
+}

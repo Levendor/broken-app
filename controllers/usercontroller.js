@@ -1,12 +1,14 @@
-const Router = require('express').Router;
+import { Router } from 'express';
+import bcrypt from 'bcryptjs';
+import Sequelize from 'sequelize';
+import jwt from 'jsonwebtoken';
+import { UserModel } from '../models/user.js';
+import { sequelize } from '../db.js';
 
-const router = Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+export const userRouter = Router();
+const User = UserModel(sequelize, Sequelize.DataTypes);
 
-const User = require('../models/user')(require('../db'), require('sequelize').DataTypes);
-
-router.post('/signup', (req, res) => {
+userRouter.post('/signup', (req, res) => {
   User.create({
     full_name: req.body.user.full_name,
     username: req.body.user.username,
@@ -28,7 +30,7 @@ router.post('/signup', (req, res) => {
     );
 });
 
-router.post('/signin', (req, res) => {
+userRouter.post('/signin', (req, res) => {
   User.findOne({ where: { username: req.body.user.username } }).then(user => {
     if (user) {
       bcrypt.compare(req.body.user.password, user.passwordHash, function (err, matches) {
@@ -48,5 +50,3 @@ router.post('/signin', (req, res) => {
     }
   });
 });
-
-module.exports = router;

@@ -1,14 +1,16 @@
-const express = require('express');
-const app = express();
-const db = require('./db');
-const user = require('./controllers/usercontroller');
-const game = require('./controllers/gamecontroller');
+import express from 'express';
+import { sequelize } from './db.js';
+import { userRouter } from './controllers/usercontroller.js';
+import { gameRouter } from './controllers/gamecontroller.js';
+import { authenticate } from './middleware/validate-session.js';
 
-db.sync();
+const app = express();
+
+sequelize.sync();
+
 app.use(express.json());
-app.use('/api/auth', user);
-app.use(require('./middleware/validate-session'));
-app.use('/api/game', game);
+app.use('/api/auth', userRouter);
+app.use('/api/game', authenticate, gameRouter);
 app.listen(process.env.PORT, function () {
   console.log('App is listening on 4000');
 });
