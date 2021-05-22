@@ -10,7 +10,7 @@ router.post('/signup', (req, res) => {
     User.create({
         full_name: req.body.user.full_name,
         username: req.body.user.username,
-        passwordhash: bcrypt.hashSync(req.body.user.password, 10),
+        passwordHash: bcrypt.hashSync(req.body.user.password, 10),
         email: req.body.user.email,
     })
         .then(
@@ -23,7 +23,7 @@ router.post('/signup', (req, res) => {
             },
 
             function signupFail(err) {
-                res.status(500).send(err.message)
+                res.status(500).json(err)
             }
         )
 })
