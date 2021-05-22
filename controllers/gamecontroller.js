@@ -1,116 +1,80 @@
-var router = require('express').Router();
-var Game = require('../db').import('../models/game');
+import { Router } from 'express';
+import Sequelize from 'sequelize';
+import { GameModel } from '../models/game.js';
+import { sequelize } from '../db.js';
 
-router.get('/all', (req, res) => {
-    Game.findAll({ where: { owner_id: req.user.id } })
-        .then(
-            function findSuccess(data) {
-                res.status(200).json({
-                    games: games,
-                    message: "Data fetched."
-                })
-            },
+export const gameRouter = Router();
+const Game = GameModel(sequelize, Sequelize.DataTypes);
 
-            function findFail() {
-                res.status(500).json({
-                    message: "Data not found"
-                })
-            }
-        )
-})
-
-router.get('/:id', (req, res) => {
-    Game.findOne({ where: { id: req.params.id, owner_id: req.user.id } })
-        .then(
-            function findSuccess(game) {
-                res.status(200).json({
-                    game: game
-                })
-            },
-
-            function findFail(err) {
-                res.status(500).json({
-                    message: "Data not found."
-                })
-            }
-        )
-})
-
-router.post('/create', (req, res) => {
-    Game.create({
-        title: req.body.game.title,
-        owner_id: req.body.user.id,
-        studio: req.body.game.studio,
-        esrb_rating: req.body.game.esrb_rating,
-        user_rating: req.body.game.user_rating,
-        have_played: req.body.game.have_played
+gameRouter.get('/all', (req, res) => {
+  Game.findAll({ where: { owner_id: req.user.id } })
+    .then((games) => {
+      res.status(200).json({ games, message: 'Data fetched.' });
     })
-        .then(
-            function createSuccess(game) {
-                res.status(200).json({
-                    game: game,
-                    message: "Game created."
-                })
-            },
+    .catch((error) => {
+      res.status(500).json({ message: 'Data not found' });
+    });
+});
 
-            function createFail(err) {
-                res.status(500).send(err.message)
-            }
-        )
-})
-
-router.put('/update/:id', (req, res) => {
-    Game.update({
-        title: req.body.game.title,
-        studio: req.body.game.studio,
-        esrb_rating: req.body.game.esrb_rating,
-        user_rating: req.body.game.user_rating,
-        have_played: req.body.game.have_played
+gameRouter.get('/:id', (req, res) => {
+  Game.findOne(
+    {
+      where: {
+        id: req.params.id,
+        owner_id: req.user.id,
+      },
     },
-        {
-            where: {
-                id: req.params.id,
-                owner_id: req.user
-            }
-        })
-        .then(
-            function updateSuccess(game) {
-                res.status(200).json({
-                    game: game,
-                    message: "Successfully updated."
-                })
-            },
+  ).then((game) => {
+    res.status(200).json({ game });
+  }).catch((error) => {
+    res.status(500).json({ message: 'Data not found.' });
+  });
+});
 
-            function updateFail(err) {
-                res.status(500).json({
-                    message: err.message
-                })
-            }
+gameRouter.post('/create', (req, res) => {
+  Game.create({
+    title: req.body.game.title,
+    owner_id: req.user.id,
+    studio: req.body.game.studio,
+    esrb_rating: req.body.game.esrb_rating,
+    user_rating: req.body.game.user_rating,
+    have_played: req.body.game.have_played,
+  }).then((game) => {
+    res.status(200).json({ game, message: 'Game created.' });
+  }).catch((error) => {
+    res.status(500).json({ message: error.message });
+  });
+});
 
-        )
-})
+gameRouter.put('/update/:id', (req, res) => {
+  Game.update({
+    title: req.body.game.title,
+    studio: req.body.game.studio,
+    esrb_rating: req.body.game.esrb_rating,
+    user_rating: req.body.game.user_rating,
+    have_played: req.body.game.have_played,
+  },
+  {
+    where: {
+      id: req.params.id,
+      owner_id: req.user.id,
+    },
+  }).then(() => {
+    res.status(200).json({ gameId: req.params.id, message: 'Successfully updated.' });
+  }).catch((error) => {
+    res.status(500).json({ message: error.message });
+  });
+});
 
-router.delete('/remove/:id', (req, res) => {
-    Game.destroy({
-        where: {
-            id: req.params.id,
-            owner_id: req.user.id
-        }
-    })
-    .then(
-        function deleteSuccess(game) {
-            res.status(200).json({
-                game: game,
-                message: "Successfully deleted"
-            })
-        },
-
-        function deleteFail(err) {
-            res.status(500).json({
-                error: err.message
-            })
-        }
-    )
-})
-
-module.exports = routers;
+gameRouter.delete('/remove/:id', (req, res) => {
+  Game.destroy({
+    where: {
+      id: req.params.id,
+      owner_id: req.user.id,
+    },
+  }).then(() => {
+    res.status(200).json({ gameId: req.params.id, message: 'Successfully deleted' });
+  }).catch((error) => {
+    res.status(500).json({ message: error.message });
+  });
+});
