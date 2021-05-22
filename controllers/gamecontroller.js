@@ -54,7 +54,9 @@ router.post('/create', (req, res) => {
             },
 
             function createFail(err) {
-                res.status(500).send(err.message)
+                res.status(500).json({
+                    message: err.message
+                })
             }
         )
 })
@@ -107,7 +109,7 @@ router.delete('/remove/:id', (req, res) => {
 
         function deleteFail(err) {
             res.status(500).json({
-                error: err.message
+                message: err.message
             })
         }
     )
