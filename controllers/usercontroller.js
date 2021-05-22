@@ -40,11 +40,11 @@ router.post('/signin', (req, res) => {
                         sessionToken: token
                     });
                 } else {
-                    res.status(502).send({ error: "Passwords do not match." })
+                    res.status(502).json({ error: "Passwords do not match." })
                 }
             });
         } else {
-            res.status(403).send({ error: "User not found." })
+            res.status(403).json({ error: "User not found." })
         }
 
     })

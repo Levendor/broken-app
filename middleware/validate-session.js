@@ -7,7 +7,10 @@ module.exports = function (req, res, next) {
     } else {
         var sessionToken = req.headers.authorization;
         console.log(sessionToken);
-        if (!sessionToken) return res.status(403).send({ auth: false, message: "No token provided." });
+        if (!sessionToken) return res.status(403).json({
+            auth: false,
+            message: "No token provided."
+        });
         else {
             jwt.verify(sessionToken, 'lets_play_sum_games_man', (err, decoded) => {
                 if (decoded) {
@@ -17,11 +20,15 @@ module.exports = function (req, res, next) {
                         next()
                     },
                         function () {
-                            res.status(401).send({ error: "not authorized" });
+                            res.status(401).json({
+                                message: "Not authorized"
+                            });
                         })
 
                 } else {
-                    res.status(400).send({ error: "not authorized" })
+                    res.status(400).json({
+                        message: "Not authorized"
+                    })
                 }
             });
         }
