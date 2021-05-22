@@ -59,8 +59,8 @@ gameRouter.put('/update/:id', (req, res) => {
       id: req.params.id,
       owner_id: req.user.id,
     },
-  }).then((game) => {
-    res.status(200).json({ game, message: 'Successfully updated.' });
+  }).then(() => {
+    res.status(200).json({ gameId: req.params.id, message: 'Successfully updated.' });
   }).catch((error) => {
     res.status(500).json({ message: error.message });
   });
